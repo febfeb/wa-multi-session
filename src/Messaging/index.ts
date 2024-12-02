@@ -1,4 +1,4 @@
-import { proto } from "@whiskeysockets/baileys";
+import { AnyMessageContent, proto } from "@whiskeysockets/baileys";
 import { Messages } from "../Defaults";
 import { getSession } from "../Socket";
 import {
@@ -34,20 +34,37 @@ export const sendTextMessage = async ({
     throw new WhatsappError(`${oldPhone} is not registered on Whatsapp`);
   }
 
-  let content: any = {
+  let content: AnyMessageContent = {
     text: text,
   };
 
   if (buttonReplies.length > 0) {
+    const sections: proto.Message.ListMessage.ISection[] = [];
+    // const buttons: proto.Message.ButtonsMessage.IButton[] = [];
+    // buttonReplies.forEach((button) => {
+    //   buttons.push({ buttonId: button, buttonText: { displayText: button }});
+    // });
+
+    sections.push({
+      rows: buttonReplies.map((button) => ({
+        title: button,
+        description: "ini deskripsi",
+        rowId: button,
+        buttons: [
+          {
+            buttonId: button,
+            buttonText: {
+              displayText: button,
+            },
+          },
+        ],
+      })),
+    });
+
     content = {
       ...content,
-      buttons: buttonReplies.map((button) => ({
-        buttonId: button,
-        buttonText: {
-          displayText: button,
-        },
-        type: 1,
-      })),
+      sections,
+      buttonText: "Lihat menu",
     };
   }
 
