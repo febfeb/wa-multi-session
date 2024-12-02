@@ -18,6 +18,7 @@ export const sendTextMessage = async ({
   to,
   text = "",
   isGroup = false,
+  buttonReplies = [],
   ...props
 }: SendMessageTypes): Promise<proto.WebMessageInfo | undefined> => {
   const session = getSession(sessionId);
@@ -32,11 +33,27 @@ export const sendTextMessage = async ({
   if (!isRegistered) {
     throw new WhatsappError(`${oldPhone} is not registered on Whatsapp`);
   }
+
+  let content: any = {
+    text: text,
+  };
+
+  if (buttonReplies.length > 0) {
+    content = {
+      ...content,
+      buttons: buttonReplies.map((button) => ({
+        buttonId: button,
+        buttonText: {
+          displayText: button,
+        },
+        type: 1,
+      })),
+    };
+  }
+
   return await session.sendMessage(
     to,
-    {
-      text: text,
-    },
+    content,
     {
       quoted: props.answering,
     }
@@ -70,8 +87,8 @@ export const sendImage = async ({
       image:
         typeof media == "string"
           ? {
-              url: media,
-            }
+            url: media,
+          }
           : media,
       caption: text,
     },
@@ -108,8 +125,8 @@ export const sendVideo = async ({
       video:
         typeof media == "string"
           ? {
-              url: media,
-            }
+            url: media,
+          }
           : media,
       caption: text,
     },
@@ -157,8 +174,8 @@ export const sendDocument = async ({
       document:
         typeof media == "string"
           ? {
-              url: media,
-            }
+            url: media,
+          }
           : media,
       mimetype: mimetype,
       caption: text,
@@ -198,8 +215,8 @@ export const sendVoiceNote = async ({
       audio:
         typeof media == "string"
           ? {
-              url: media,
-            }
+            url: media,
+          }
           : media,
       ptt: true,
     },
@@ -238,8 +255,8 @@ export const sendSticker = async ({
       sticker:
         typeof media == "string"
           ? {
-              url: media,
-            }
+            url: media,
+          }
           : media,
     },
     {

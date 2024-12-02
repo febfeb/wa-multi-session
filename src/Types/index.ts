@@ -6,6 +6,7 @@ export interface SendMessageTypes {
   sessionId: string;
   isGroup?: boolean;
   answering?: proto.IWebMessageInfo;
+  buttonReplies?: string[];
 }
 
 export interface SendMediaTypes extends SendMessageTypes {
